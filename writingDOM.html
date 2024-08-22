@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="writingDOM.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+    function createInputField(type, name, placeholder) {
+        const input = document.createElement('input');
+        input.type = type;
+        input.name = name;
+        input.placeholder = placeholder;
+        input.style.display = 'block';
+        input.style.marginBottom = '10px';
+        return input;
+    }
+
+    function createWarning(message) {
+        const warning = document.createElement('div');
+        warning.className = 'warning';
+        warning.style.display = 'none';
+        warning.innerText = message;
+        return warning;
+    }
+
+    function validateEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+
+    function setupForm() {
+        const form = document.createElement('form');
+        const fields = [
+            { type: 'text', name: 'firstName', placeholder: 'First Name' },
+            { type: 'text', name: 'lastName', placeholder: 'Last Name' },
+            { type: 'email', name: 'email', placeholder: 'Email Address' },
+            { type: 'password', name: 'password', placeholder: 'Password' },
+            { type: 'password', name: 'confirmPassword', placeholder: 'Confirm Password' }
+        ];
+
+        fields.forEach(field => {
+            const input = createInputField(field.type, field.name, field.placeholder);
+            form.appendChild(input);
+
+            if (field.name === 'email') {
+                const emailWarning = createWarning('Invalid email address (e.g., name@domain.com).');
+                form.appendChild(emailWarning);
+
+                input.addEventListener('input', () => {
+                    emailWarning.style.display = validateEmail(input.value) ? 'none' : 'block';
+                });
+            }
+
+            if (field.name === 'password') {
+                const passwordWarning = createWarning('Password must be at least 6 characters long.');
+                form.appendChild(passwordWarning);
+
+                input.addEventListener('input', () => {
+                    passwordWarning.style.display = input.value.length < 6 ? 'block' : 'none';
+                });
+            }
+        });
+
+        const submitButton = document.createElement('button');
+        submitButton.type = 'submit';
+        submitButton.innerText = 'Register';
+        form.appendChild(submitButton);
+
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+
+            const email = form.email.value;
+            const password = form.password.value;
+            const confirmPassword = form.confirmPassword.value;
+
+            if (!validateEmail(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            alert('Successfully registered!');
+            form.reset();
+        });
+
+        return form;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const appDiv = document.getElementById('app');
+        const header = document.createElement('h1');
+        header.innerText = 'Registration Form';
+
+        appDiv.appendChild(header);
+        appDiv.appendChild(setupForm());
+    });
+</script>
+
+</body>
+</html>
